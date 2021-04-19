@@ -1,0 +1,19 @@
+De decis
+- In ce fel de fisier salvam datele? (fisiere binare / csv / ...)
+- Accesarea datelor de pe disc facuta cu un B+Tree sau o solutie mai simpla
+  Avantaje B+Tree:
+  - Eficient dpv al memoriei
+  - Rapid (operatii de insertie, stergere, cautare in tabel in O(logn))
+  Dezavantaje:
+  - Greu de implementat :(
+
+  Alte optiuni: lista inlantuita (insertie, stergere, cautare in O(n))
+
+- Comenzi date prin Read-Evaluate-Print Loop sau Command line args
+
+- Ce functionalitati adaugam?
+  - INSERT ...
+  - UPDATE ...
+  - CREATE ...
+  - DELETE ...
+  - SELECT ...
