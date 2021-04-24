@@ -171,3 +171,67 @@ Operatii:
       | ^  |   ^    |  ^------ |
       | |  |   |    |        | |
       keys, child_pointers, page_pointers
+
+
+      Fisierul persoane.arb devine
+      +------+--------+-+------------------+
+      |"id\0"|"nume\0"|1|"claudiu\0       "|
+      +------+--------+-+------------------+
+      +-+----------------+
+      |2|"raul\0        "|
+      +-+----------------+
+      +-+----------------+
+      |3|"octavian\0    "|
+      +-+----------------+
+
+
+
+  4)  remove from persoane 1 (sterge dupa index)
+
+      Ultima linie de pe pagina 1 este stearsa, deci pagina este libera
+      In db_insert_q se da push la offset-ul paginii (8)
+
+
+      Fisierul persoane.arb devine
+      +------+--------+--+------------------+
+      |"id\0"|"nume\0"|-1|"claudiu\0       "|
+      +------+--------+--+------------------+
+      +-+----------------+
+      |2|"raul\0        "|
+      +-+----------------+
+      +-+----------------+
+      |3|"octavian\0    "|
+      +-+----------------+
+      id-ul -1 semnaleaza ca pagina nu e folosita
+
+
+      Nodul in care are pointer la pagina 1 nu mai are pagini, deci este sters
+      In arb_insert_q se da push la offset-ul nodului (0)
+
+      
+      (Nod1)
+      +--+--+--+--+--+-+--+
+      |-1|-1|-1|-1|-1|8|-1|
+      +--+--+--+--+--+-+--+
+      | ^   |   ^    |  ^------ |
+      | |   |   |    |        | |
+      keys, child_pointers, page_pointers
+
+      (Nod2)
+      +-+--+-+---+--+--+--+
+      |2|-1|0|112|-1|46|-1|
+      +-+--+-+---+--+--+--+
+      | ^  |   ^    |  ^------ |
+      | |  |   |    |        | |
+      keys, child_pointers, page_pointers
+      ->0 este offsetul primului nod
+      ->112 este offsetul celui de al treilea nod
+      
+      (Nod3)
+      +-+--+--+--+--+--+--+
+      |3|-1|-1|-1|-1|84|-1|
+      +-+--+--+--+--+--+--+
+      | ^  |   ^    |  ^------ |
+      | |  |   |    |        | |
+      keys, child_pointers, page_pointers
+
