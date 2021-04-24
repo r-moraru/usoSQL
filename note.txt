@@ -17,3 +17,46 @@ De decis
   - CREATE ...
   - DELETE ...
   - SELECT ...
+
+
+  A) Pentru B-Tree:
+    Fiecare tabel are doua fisiere: 
+      unul cu datele b-tree-ului asociat
+      unul cu datele din tabel
+
+      Fisierul arborelui:
+        Contine datele nodurilor + pozitii in fisier unde se pot adauga noi noduri
+        
+        Nodurile pot fi puse in orice ordine
+        
+        "Pointerii" catre child nodes sunt de fapt 
+        offset-ul din fisier al nodului respectiv
+        (La al catelea byte din fisier este stocat nodul?)
+
+        Stergerea marcheaza spatiul din fisier al unui nod drept "nefolosit".
+        Pozitiile nodurilor nefolosite sunt stocate intr-un array 
+        la inceputul/finalul fisierului.
+
+        Inserarea noilor noduri in arbore se face in functie de pozitiile din array.
+
+        Fiecare leaf node contine offset-ul unei pagini (definite mai jos)
+        din fisierul cu date ale tabelului.
+
+        Nodurile sunt ordonate dupa id-ul primei linii de pe pagina asociata acestuia.
+
+
+      Fisierul cu datele din tabel:
+        Este impartit in pagini (blocuri de 4096 bytes)
+        
+        Fiecare pagina contine mai multe linii din tabel
+        (liniile nu vor fi impartite pe mai multe pagini)
+
+        Liniile dintr-o pagina sunt ordonate dupa id
+
+        Daca o pagina este plina, se creeaza o noua pagina la sfarsitul fisierului,
+        se insereaza acolo.
+        (Ordinea paginilor in fisier nu conteaza)
+
+        Daca se sterge singurul element ramas intr-o pagina, aceasta este marcata drept
+        "nefolosita". (Paginile se adauga la fel ca nodurile din b-tree)
+        De asemenea, se sterge nodul ei din b-tree.
