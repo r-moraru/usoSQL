@@ -61,3 +61,113 @@ De decis
         Daca se sterge singurul element ramas intr-o pagina, aceasta este marcata drept
         "nefolosita". (Paginile se adauga la fel ca nodurile din b-tree)
         De asemenea, se sterge nodul ei din b-tree.
+
+Exemplu:
+Tabel Persoane
++----+-------------------+
+| id |      int64_t      |
++----+-------------------+
+|nume|char array (max 30)|
++----+-------------------+
+
+Fisiere:
+  persoane.db  (pentru linii)
+  persoane.arb (pentru arbore)
+
+Obiecte la runtime:
+  queue db_insert_q (queue pentru spatii libere in fisierul persoane.db)
+  queue arb_insert_q (queue pentru spatii libere in fisierul persoane.arb)
+
+Ambele queue-uri sunt goale
+
+La inceputul fisierului persoane.db se afla doar numele coloanelor
+(ocupa 7 bytes in exemplu, deci prima pagina apare la al 8-lea byte)
+
+Structura unui nod in arbore:
+  keys (array, contine id-ul paginilor)
+  child_pointers (array de pointeri)
+  page_pointers (array, offset-urile paginilor asociate cheilor)
+
+  Pentru exemplu, un nod are doar 2 chei/valori si 3 pointeri
+
+La inceput fisierul persoane.arb contine un singur nod:
+Nod1:
+  keys: [-1, -1]
+  child_pointers: [NULL, NULL, NULL]
+  page_pointers: [-1, -1]
+
+
+Operatii:
+  1)  insert 1 claudiu (1 = id, claudiu = nume)
+
+      Se cauta pozitia din arbore unde se va adauga noua linie
+      Se creeaza o noua pagina in persoane.db (la al 8-lea byte)
+
+
+      Fisierul persoane.db devine
+      (Nod1)
+      +-+--+--+--+--+-+--+
+      |1|-1|-1|-1|-1|8|-1|
+      +-+--+--+--+--+-+--+
+      | ^  |   ^    | ^------ |
+      | |  |   |    |       | |
+      keys, child_pointers, page_pointers
+
+
+      Fisierul persoane.arb devine
+      +------+--------+-+------------------+
+      |"id\0"|"nume\0"|1|"claudiu\0       "|
+      +------+--------+-+------------------+
+      (spatiu adaugat pentru ca numele ocupa 30 bytes)
+
+  2)  insert 2 raul
+     
+      Presupunem ca o pagina retine o singura linie
+
+      Fisierul persoane.arb devine
+      +------+--------+-+------------------+
+      |"id\0"|"nume\0"|1|"claudiu\0       "|
+      +------+--------+-+------------------+
+      +-+----------------+
+      |2|"raul\0        "|
+      +-+----------------+
+
+      Fisierul persoane.db devine
+      (Nod1)
+      +-+-+--+--+--+-+--+
+      |1|2|-1|-1|-1|8|46|
+      +-+-+--+--+--+-+--+
+      | ^ |   ^    |  ^------ |
+      | | |   |    |        | |
+      keys, child_pointers, page_pointers
+
+      Noua pagina va avea cheia 2 si offset-ul 46
+
+  3)  insert 3 octavian
+
+      Fisierul persoane.db devine
+      (Nod1)
+      +-+--+--+--+--+-+--+
+      |1|-1|-1|-1|-1|8|-1|
+      +-+--+--+--+--+-+--+
+      | ^  |   ^    |  ^------ |
+      | |  |   |    |        | |
+      keys, child_pointers, page_pointers
+
+      (Nod2)
+      +-+--+-+---+--+--+--+
+      |2|-1|0|112|-1|46|-1|
+      +-+--+-+---+--+--+--+
+      | ^  |   ^    |  ^------ |
+      | |  |   |    |        | |
+      keys, child_pointers, page_pointers
+      ->0 este offsetul primului nod
+      ->112 este offsetul celui de al treilea nod
+      
+      (Nod3)
+      +-+--+--+--+--+--+--+
+      |3|-1|-1|-1|-1|84|-1|
+      +-+--+--+--+--+--+--+
+      | ^  |   ^    |  ^------ |
+      | |  |   |    |        | |
+      keys, child_pointers, page_pointers
