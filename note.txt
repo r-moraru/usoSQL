@@ -53,8 +53,7 @@ De decis
 
         Liniile dintr-o pagina sunt ordonate dupa id
 
-        Daca o pagina este plina, se creeaza o noua pagina la sfarsitul fisierului,
-        se insereaza acolo.
+        Daca o pagina este plina, se creeaza o noua pagina, se insereaza acolo.
         (Ordinea paginilor in fisier nu conteaza)
 
         Daca se sterge singurul element ramas intr-o pagina, aceasta este marcata drept
