@@ -34,10 +34,12 @@ De decis
         (La al catelea byte din fisier este stocat nodul?)
 
         Stergerea marcheaza spatiul din fisier al unui nod drept "nefolosit".
-        Pozitiile nodurilor nefolosite sunt stocate intr-un array 
-        la inceputul/finalul fisierului.
+        Pozitiile nodurilor nefolosite sunt stocate 
+          a) intr-un array la inceputul/finalul fisierului.
+          sau (o idee mai buna)
+          b) intr-un queue retinut in RAM
 
-        Inserarea noilor noduri in arbore se face in functie de pozitiile din array.
+        Inserarea noilor noduri in arbore se face in functie de pozitiile din array/queue.
 
         Fiecare leaf node contine offset-ul unei pagini (definite mai jos)
         din fisierul cu date ale tabelului.
