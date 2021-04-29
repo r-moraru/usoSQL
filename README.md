@@ -61,7 +61,7 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 
 ## Contact
-* **Moraru Radu Andrei** (radu.a.moraru@gmail.com)
-* **Matei Tudor Cristian** (cristianmateix2001@gmail.com)
-* **Trăncănău Cezar Alexandru** (cezartrancanau@gmail.com)
-* **Brinceanu Andi Mădălin** (andi.madalin@gmail.com)
+* **Moraru Radu-Andrei** (radu.a.moraru@gmail.com)
+* **Matei Tudor-Cristian** (cristianmateix2001@gmail.com)
+* **Trăncănău Cezar-Alexandru** (cezartrancanau@gmail.com)
+* **Brinceanu Andi-Mădălin** (andi.madalin@gmail.com)
