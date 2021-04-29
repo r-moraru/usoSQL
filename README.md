@@ -10,7 +10,7 @@ usoSQL is a database program in C that implements basic SQL commands to store an
 <!--te-->
 
 ## Usage 
-**Open the database:**
+**Open database:**
 ```
 ./main name_db
 ```
