@@ -11,6 +11,7 @@ void help(){
     printf("Citeste fisierul README.md");
 }
 
+
 void create(char* path){
     char check[10], table[100];
     printf("Sunt la create!\n");
