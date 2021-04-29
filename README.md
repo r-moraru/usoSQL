@@ -9,7 +9,7 @@ usoSQL is a database program in C that implements basic SQL commands to store an
    * [Contact](#contact)
 <!--te-->
 
-## Usage
+## Usage 
 **Open the database:**
 ```
 ./main name_db
