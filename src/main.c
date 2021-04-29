@@ -30,7 +30,7 @@ void create(char* path){
             printf("%s %s\n", coloana, tip);
             fwrite(coloana, 1, strlen(coloana)+1, db);
             fwrite(tip, 1, 1, db);
-            if(tip[0] == 'c'){
+            if(tip[0] == 'c'){ 
                 int nr;
                 sscanf(tip+5,"%d", &nr);
                 fwrite(&nr, sizeof(nr), 1, db);
