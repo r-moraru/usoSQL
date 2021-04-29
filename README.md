@@ -2,6 +2,13 @@
 
 usoSQL is a database program in C that implements basic SQL commands to store and manipulate data.
 
+## Table of contents
+<!--ts-->
+   * [Usage](#usage)
+   * [Contributing](#contributing)
+   * [Contact](#contact)
+<!--te-->
+
 ## Usage
 **Open the database:**
 ```
