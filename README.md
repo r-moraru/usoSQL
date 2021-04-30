@@ -15,18 +15,18 @@
 ./main name_db
 ```
 
-**Create a table:**
+**Create a table** (**data_type** can be either **int**, **char(nr)** or **float**):
 ```sql
 CREATE TABLE table_name
-column1 text int
-column2 text char(255)
-column3 text char(255)
-column4 text char(255)
-column5 text char(255)
+column1_name text data_type
+column2_name text data_type
+column3_name text data_type
+column4_name text data_type
+column5_name text data_type
 .
 .
 .
-columnN text char(255);
+columnN_name text data_type;
 ```
 
 **Insert data into a table:**
@@ -39,12 +39,12 @@ value1 value2 value3 ...;
 **Update data from a table:**
 ```sql
 UPDATE table_name
-SET column1 = value1 column2 = value2 ...
+SET column1_name = value1 column2_name = value2 ... 
 WHERE condition;
 ```
 **Select data from a table:**
 ```sql
-SELECT column1 column2 ...
+SELECT column1_name column2_name ...
 FROM table_name;
 ```
 **Delete data from a table:**
