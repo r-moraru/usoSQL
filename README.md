@@ -11,12 +11,12 @@
 
 ## Usage 
 **Open database:**
-```
+```sql
 ./main name_db
 ```
 
 **Create a table:**
-```
+```sql
 CREATE TABLE table_name
 column1 int
 column2 char(255)
@@ -31,28 +31,28 @@ columnN char(255);
 
 **Insert data into a table:**
 
-```
+```sql
 INSERT INTO table_name
 value1 value2 value3 ...;
 ```
 
 **Update data from a table:**
-```
+```sql
 UPDATE table_name
 SET column1 = value1 column2 = value2 ...
 WHERE condition;
 ```
 **Select data from a table:**
-```
+```sql
 SELECT column1 column2 ...
 FROM table_name;
 ```
 **Delete data from a table:**
-```
+```sql
 DELETE FROM table_name WHERE condition;
 ```
 **Delete database:**
-```
+```sql
 DROP DATABASE name_db
 ```
 
