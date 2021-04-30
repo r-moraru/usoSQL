@@ -1,0 +1,18 @@
+INSERT:
+  Fara B-Tree, operatia de insert introduce o linie noua pe prima pagina
+  care are suficient spatiu pentru ea.
+
+  Mai intai programul cauta prima pagina cu suficient spatiu liber (cat spatiu
+  este de la primul ID -1 pana la urmatoarea pagina)
+
+  Liniile dintr-o pagina sunt inserate in ordine crescatoare (dupa ID)
+  Pentru simplitate putem cauta secvential in pagina prima linie care are un
+  ID mai mare decat cel al noii linii. Mutam toate liniile cu ID mai mare in jos
+  cu o pozitie. Introducem noua linie in spatiul creat.
+
+DELETE:
+  Programul cauta secvential, linie dupa linie, sterge linia care
+  indeplineste conditia. Liniile de sub spatiul lasat liber sunt mutate in sus.
+
+SELECT:
+  Se citeste tabelul secvential, sunt printate liniile care indeplinesc conditia

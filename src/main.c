@@ -11,22 +11,30 @@ void help(){
     printf("Citeste fisierul README.md");
 }
 
-void create(){
+void create() {
     char check[10], table[100];
+
     printf("Sunt la create!\n");
     scanf("%s %s", check, table);
+
     strcat(table, ".db");
     if(strcmp(check, "TABLE") != 0){
         help();
-    } else {
+      } else {
+        // TODO: Check if table already exists. If it does, quit
+
         FILE *db = fopen(table, "wb");
         char coloana[100], tip[100];
+
         while(tip[strlen(tip)-1] != ';'){
             scanf("%s", coloana);
             scanf("%s", tip);
+
             printf("%s %s\n", coloana, tip);
-            fwrite(coloana, 1, strlen(coloana)+1, db);
-            fwrite(tip, 1, 1, db);
+
+            fwrite(coloana, sizeof *coloana, strlen(coloana)+1, db);
+            fwrite(tip, sizeof *tip, 1, db);
+
             if(tip[0] == 'c'){
                 int nr;
                 sscanf(tip+5,"%d", &nr);
@@ -34,6 +42,7 @@ void create(){
             }
             fwrite(",", 1, 1, db);
         }
+        fwrite("\n", 1, 1, db);
         fclose(db);
     }
 }
@@ -57,7 +66,9 @@ void select(){
 void drop(){
     printf("Sunt la drop!\n");
     char check[100], name[100];
+
     scanf("%s %s", check, name);
+
     if(strcmp(check, "DATABASE") == 0){
         //de facut
     } else if(strcmp(check, "TABLE") == 0){
@@ -69,9 +80,11 @@ void drop(){
 int main(int argc, char* argv[]) {
     char sqlcmd[1000];
     scanf("%s", sqlcmd); //citeste primul cuvant cheie
+
     if(argc == 2) {
         char path[100];
         strcpy(path, argv[1]);
+
         int check = mkdir(path);
         // check if database is created or not
         if (!check)
