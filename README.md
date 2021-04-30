@@ -15,7 +15,7 @@
 ./main name_db
 ```
 
-**Create a table** **(data_type** can be either **int**, **char(nr)** or **float):**
+**Create a table:**
 ```sql
 CREATE TABLE table_name
 column1_name text data_type
@@ -24,6 +24,11 @@ column2_name text data_type
 .
 .;
 ```
+**⚠️ IMPORTANT ⚠️**
+
+**data_type** can be either **int**, **char(nr)** or **float**
+
+**;** is needed at the end of last command to create the table
 
 **Insert data into a table:**
 
