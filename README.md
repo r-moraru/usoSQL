@@ -24,11 +24,9 @@ column2_name text data_type
 .
 .;
 ```
-**⚠️ IMPORTANT ⚠️**
-
-**data_type** can be either **int**, **char(nr)** or **float**
-
-**;** is needed at the end of last command to create the table
+   * **⚠️ IMPORTANT ⚠️**
+      * **data_type** can be either **int**, **char(nr)** or **float**
+      * **;** is needed at the end of last command to create the table
 
 **Insert data into a table:**
 
