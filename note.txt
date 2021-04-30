@@ -1,25 +1,36 @@
-De decis
-- In ce fel de fisier salvam datele? (fisiere binare / csv / ...)
-- Accesarea datelor de pe disc facuta cu un B+Tree sau o solutie mai simpla
-  Avantaje B+Tree:
-  - Eficient dpv al memoriei
-  - Rapid (operatii de insertie, stergere, cautare in tabel in O(logn))
-  Dezavantaje:
-  - Greu de implementat :(
-
-  Alte optiuni: lista inlantuita (insertie, stergere, cautare in O(n))
-
-- Comenzi date prin Read-Evaluate-Print Loop sau Command line args
-
-- Ce functionalitati adaugam?
-  - INSERT ...
-  - UPDATE ...
-  - CREATE ...
-  - DELETE ...
-  - SELECT ...
+./main nume_db
+intra in baza de date (daca nu exista este creata)
 
 
-  A) Pentru B-Tree:
+CREATE TABLE Persons 
+PersonID int
+LastName char(255)
+FirstName char(255)
+Address char(255)
+City char(255);
+(tipurile de date o sa fie int, char(nr) si float)
+
+
+INSERT INTO table_name
+value1 value2 value3 ...;
+
+
+UPDATE table_name
+SET column1 = value1 column2 = value2 ...
+WHERE condition;
+
+
+SELECT column1 column2 ...
+FROM table_name;
+
+
+DELETE FROM table_name WHERE condition;
+
+
+DROP DATABASE nume_db
+(sterge baza de date)
+
+Pentru B-Tree:
     Fiecare tabel are doua fisiere: 
       unul cu datele b-tree-ului asociat
       unul cu datele din tabel
