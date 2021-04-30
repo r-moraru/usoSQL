@@ -18,15 +18,15 @@
 **Create a table:**
 ```sql
 CREATE TABLE table_name
-column1 text [int]
-column2 text [char(255)]
-column3 text [char(255)]
-column4 text [char(255)]
-column5 text [char(255)]
+column1 text int
+column2 text char(255)
+column3 text char(255)
+column4 text char(255)
+column5 text char(255)
 .
 .
 .
-columnN text [char(255)];
+columnN text char(255);
 ```
 
 **Insert data into a table:**
