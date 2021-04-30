@@ -20,20 +20,16 @@
 CREATE TABLE table_name
 column1_name text data_type
 column2_name text data_type
-column3_name text data_type
-column4_name text data_type
-column5_name text data_type
 .
 .
-.
-columnN_name text data_type;
+.;
 ```
 
 **Insert data into a table:**
 
 ```sql
 INSERT INTO table_name
-value1 value2 value3 ...;
+value1 value2 ...;
 ```
 
 **Update data from a table:**
