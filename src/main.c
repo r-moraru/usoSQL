@@ -11,18 +11,15 @@ void help(){
     printf("Citeste fisierul README.md");
 }
 
-void create(char* path){
+void create(){
     char check[10], table[100];
     printf("Sunt la create!\n");
-    printf("%s", path);
     scanf("%s %s", check, table);
-    strcat(path, "//");
-    strcat(path, table);
-    strcat(path, ".db");
+    strcat(table, ".db");
     if(strcmp(check, "TABLE") != 0){
         help();
     } else {
-        FILE *db = fopen(path, "wb");
+        FILE *db = fopen(table, "wb");
         char coloana[100], tip[100];
         while(tip[strlen(tip)-1] != ';'){
             scanf("%s", coloana);
@@ -41,65 +38,63 @@ void create(char* path){
     }
 }
 
-void insert(char* path){
+void insert(){
     printf("Sunt la insert!\n");
-    printf("%s", path);
 }
 
-void delete(char* path){
+void delete(){
     printf("Sunt la delete!\n");
-    printf("%s", path);
 }
 
-void update(char* path){
+void update(){
     printf("Sunt la update!\n");
-    printf("%s", path);
 }
 
-void select(char* path){
+void select(){
     printf("Sunt la select!\n");
-    printf("%s", path);
 }
 
-void drop(char* path){
+void drop(){
     printf("Sunt la drop!\n");
-    printf("%s", path);
     char check[100], name[100];
     scanf("%s %s", check, name);
     if(strcmp(check, "DATABASE") == 0){
         //de facut
     } else if(strcmp(check, "TABLE") == 0){
-        strcat(path, "//");
-        strcat(path, name);
-        strcat(path, ".db");
-        remove(path);
+        strcat(name, ".db");
+        remove(name);
     }
 }
 
 int main(int argc, char* argv[]) {
     char sqlcmd[1000];
-    int i;
-    scanf("%s", sqlcmd); //citeste pana la caracterul ';'
+    scanf("%s", sqlcmd); //citeste primul cuvant cheie
     if(argc == 2) {
         char path[100];
         strcpy(path, argv[1]);
         int check = mkdir(path);
-
-        // check if directory is created or not
+        // check if database is created or not
         if (!check)
             printf("Database created\n");
+
+        int ch=chdir(path); //aici se schimba working directory-ul pentru program
+        if(ch<0) {
+            printf("Something went wrong, chdir change of directory not successful\n");
+            return 2;
+        }
+
         if (strcmp(sqlcmd, "CREATE") == 0) {
-            create(path);
+            create();
         } else if (strcmp(sqlcmd, "INSERT") == 0) {
-            insert(path);
+            insert();
         } else if (strcmp(sqlcmd, "DELETE") == 0) {
-            delete(path);
+            delete();
         } else if (strcmp(sqlcmd, "UPDATE") == 0) {
-            update(path);
+            update();
         } else if (strcmp(sqlcmd, "SELECT") == 0) {
-            select(path);
+            select();
         } else if (strcmp(sqlcmd, "DROP") == 0){
-            drop(path);
+            drop();
         } else {
             help();
         }
