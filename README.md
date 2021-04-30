@@ -11,22 +11,22 @@
 
 ## Usage 
 **Open database:**
-```sql
+```bash
 ./main name_db
 ```
 
 **Create a table:**
 ```sql
 CREATE TABLE table_name
-column1 int
-column2 char(255)
-column3 char(255)
-column4 char(255)
-column5 char(255)
+column1 text [int]
+column2 text [char(255)]
+column3 text [char(255)]
+column4 text [char(255)]
+column5 text [char(255)]
 .
 .
 .
-columnN char(255);
+columnN text [char(255)];
 ```
 
 **Insert data into a table:**
