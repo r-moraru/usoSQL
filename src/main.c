@@ -6,6 +6,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <limits.h>
+#include <dirent.h>
 
 void help(){
     printf("Citeste fisierul README.md");
@@ -13,15 +15,18 @@ void help(){
 
 void create() {
     char check[10], table[100];
-
     printf("Sunt la create!\n");
     scanf("%s %s", check, table);
 
     strcat(table, ".db");
     if(strcmp(check, "TABLE") != 0){
         help();
-      } else {
-        // TODO: Check if table already exists. If it does, quit
+    } else {
+        // Check if table already exists. If it does, quit
+        if( access(table, F_OK ) == 0 ) {
+            printf("Deja exista %s", table);
+            exit(0);
+        }
 
         FILE *db = fopen(table, "wb");
         char coloana[100], tip[100];
@@ -67,11 +72,33 @@ void drop(){
     printf("Sunt la drop!\n");
     char check[100], name[100];
 
-    scanf("%s %s", check, name);
+    scanf("%s", check);
 
     if(strcmp(check, "DATABASE") == 0){
-        //de facut
+        DIR *d;
+        struct dirent *dir;
+        d = opendir(".");
+        if (d) {
+            while ((dir = readdir(d)) != NULL) {
+                if(strcmp(dir->d_name + (strlen(dir->d_name) - 3),".db") == 0){
+                    remove(dir->d_name); //se sterg toate fisierele cu extensia .db din folder
+                }
+            }
+
+            char cwd[PATH_MAX]; //cwd - current working directory
+            if (getcwd(cwd, sizeof(cwd)) != NULL) {
+                chdir(".."); //schimb cwd pentru a il putea sterge
+                int r = rmdir(cwd); //sterg folderul bazei de date
+                if(r == -1){
+                    perror("rmdir() error");
+                }
+            } else {
+                perror("getcwd() error");
+            }
+            closedir(d);
+        }
     } else if(strcmp(check, "TABLE") == 0){
+        scanf("%s", name);
         strcat(name, ".db");
         remove(name);
     }
