@@ -17,6 +17,7 @@ table_t *table_alloc(int columns) {
         return NULL;
 
     temp->columns = columns;
+    temp->row_size = 0;
 
     temp->column_names = malloc(columns * sizeof *(temp->column_names));
     if (temp->column_names == NULL) {
@@ -64,6 +65,7 @@ void free_table(table_t *table) {
     free(table);
 }
 
+// Reads data from table file and returns table struct after initializing it
 table_t *init_table(char *table_name) {
     strcat(table_name, ".db");
     FILE *fin = fopen(table_name, "rb");
@@ -108,6 +110,7 @@ table_t *init_table(char *table_name) {
         }
 
         p += sizeof(char);
+        table->row_size += table->column_sizes[current_column];
 
         printf("Column %d: %s, type %c, size %d\n",
                   current_column,
