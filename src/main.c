@@ -7,6 +7,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "pager/pager.h"
+
 void help(){
     printf("Citeste fisierul README.md");
 }
@@ -32,7 +34,8 @@ void create() {
 
             printf("%s %s\n", coloana, tip);
 
-            fwrite(coloana, sizeof *coloana, strlen(coloana)+1, db);
+            fwrite(coloana, sizeof *coloana, strlen(coloana), db);
+            fwrite(" ", 1, 1, db);
             fwrite(tip, sizeof *tip, 1, db);
 
             if(tip[0] == 'c'){
