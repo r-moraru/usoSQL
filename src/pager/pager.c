@@ -6,9 +6,10 @@
 
 
 #define INFO_SIZE 1024
+#define PAGE_SIZE 4096
 #define COLNAME_SIZE 100
 
-// TODO: create read_page function
+// TODO: check for buffer overflows
 
 // creates a new table object
 table_t *table_alloc(int columns) {
@@ -123,3 +124,22 @@ table_t *init_table(char *table_name) {
 
     return table;
 }
+
+void get_page(char *page_buffer, FILE *table, long int offset) {
+    fseek(table, offset, SEEK_SET);
+    fread(page_buffer, sizeof(*page_buffer), PAGE_SIZE, table);
+}
+
+void append_page(FILE *table) {
+    fseek(table, 0, SEEK_END);
+    char new_page[PAGE_SIZE];
+    int *temp = (int *)new_page;
+
+    // primul id de pe pagina este -1
+    temp[0] = -1;
+
+    fwrite(new_page, sizeof(char), PAGE_SIZE, table);
+}
+
+// TODO: (function) find first page to fit new row (if end of file reached, use append_page)
+// TODO: (function) insert and delete row from page
