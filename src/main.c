@@ -57,6 +57,42 @@ void create() {
 
 void insert(){
     printf("Sunt la insert!\n");
+    char check[10], table[100];
+    scanf("%s %s", check, table);
+    strcat(table, ".db");
+
+     if(strcmp(check, "INTO") != 0){
+        help();
+    } else {
+        // Check if table doesn't exist. If it doesn't, quit
+        if( access(table, F_OK ) != 0 ) {
+            printf("Nu exista %s", table);
+            exit(0);
+        }
+
+         FILE *db = fopen(table, "ab");
+        char val[100];
+
+        while(val[strlen(val)-1] != ';'){
+            scanf("%s", val);
+
+            printf("%s\n", val);
+
+            if(val[strlen(val) - 1] == ';')
+                fwrite(val, sizeof *val, strlen(val) - 1, db);
+            else
+            {
+                fwrite(val, sizeof *val, strlen(val), db);
+                fwrite(",", 1, 1, db);
+            }
+
+
+        }
+        fwrite("\n", 1, 1, db);
+        fclose(db);
+    }
+
+
 }
 
 void delete(){
