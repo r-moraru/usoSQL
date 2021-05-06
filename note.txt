@@ -262,10 +262,3 @@ Operatii:
       
       Fisierele persoane.arb si persoane.db sunt identice cu cele de la pasul 3)
       Cele doua queue-uri sunt goale
-
-Putem sa facem task-urile de front end in paralel cu cele de back end.
-Facem de la inceput niste abstractizari (structuri si functii).
-In timp ce unii lucreaza la arbore, ceilalti folosesc o implementare simpla a
-unui tabel (un array spre exemplu, eficienta nu conteaza). La final inlocuim
-implementarea cu array cu cea cu B-Tree/Linked List fara sa schimbam codul din
-fisiere.

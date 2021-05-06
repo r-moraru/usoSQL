@@ -1,26 +1,32 @@
 #ifndef PAGER_H_
 #define PAGER_H_
 
+// TODO: page_size dinamic (se adapteaza la dimensiunile liniilor)
 #define PAGE_SIZE 4096
+#define MAX_INFO_SIZE 1024
+#define COLNAME_SIZE 100
 
 typedef struct {
     int columns;
-    long int info_size;   // number of bytes used at the beginning of the file
+    size_t info_size;   // number of bytes used at the beginning of the file
     char **column_names;  // array of strings
     char *column_types;
-    int *column_sizes;
+    size_t *column_sizes;
     // column_prefix_sum array for fast retrieval of column position in file?
-    long int row_size;    // number of bytes required to store a row
+    size_t row_size;    // number of bytes required to store a row
 } table_t;
 
 // open & init table
-table_t *init_table(char *table_name);
+table_t *init_table(FILE *fin);
 void free_table(table_t *table);
 
-// search for row
+// TODO: search for rows that satisfy a condition
+//       Use a callback for those rows
 
-// insert new row
+void insert_row(char *row, table_t *table, FILE *fin);
 
-// delete row
+// TODO: delete row (function used as callback for search)
+
+// TODO: update row (function used as callback for search)
 
 #endif

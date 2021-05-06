@@ -4,14 +4,11 @@
 
 #include "pager.h"
 
-
-#define INFO_SIZE 1024
-#define PAGE_SIZE 4096
-#define COLNAME_SIZE 100
-
 // TODO: check for buffer overflows
 
-// creates a new table object
+/*
+ * Creates a new table object
+ */
 table_t *table_alloc(int columns) {
     table_t *temp = malloc(sizeof *temp);
     if (temp == NULL)
@@ -55,6 +52,9 @@ table_t *table_alloc(int columns) {
     return temp;
 }
 
+/*
+ * Frees dynamically allocated memory under table struct
+ */
 void free_table(table_t *table) {
     for (int i = 0; i < table->columns; i++)
         free(table->column_names[i]);
@@ -65,35 +65,31 @@ void free_table(table_t *table) {
 
     free(table);
 }
-
-// Reads data from table file and returns table struct after initializing it
-table_t *init_table(char *table_name) {
-    strcat(table_name, ".db");
-    FILE *fin = fopen(table_name, "rb");
-    if (fin == NULL) {
-        printf("Table \"%s\" does not exist.\n", table_name);
-        return NULL;
-    }
-
-    char info[INFO_SIZE]; // turn into dynamically allocated vector
-    fread(info, sizeof *info, INFO_SIZE-1, fin);
-    info[INFO_SIZE-1] = '\0';
+/*
+ * Reads data from table file and returns table struct after initializing it
+ */
+table_t *init_table(FILE *fin) {
+    char info[MAX_INFO_SIZE]; // turn into dynamically allocated vector
+    fread(info, sizeof *info, MAX_INFO_SIZE - 1, fin);
+    info[MAX_INFO_SIZE - 1] = '\0';
 
     fclose(fin);
 
     int columns = 0;
 
-    for (char *p = info; *p != '\n' && p-info < INFO_SIZE; p += 1)
+    char *p;
+    for (p = info; *p != '\n' && p-info < MAX_INFO_SIZE; p += 1)
         if (*p == ',') columns++;
 
     table_t *table = table_alloc(columns);
-    table->info_size = strchr(info, '\n')-info+1;
+    table->info_size = p-info+1;
+    printf("table info size: %zu\n", table->info_size);
 
     // test
-    printf("Table %s (%d columns):\n", table_name, columns);
+    printf("Table (%d columns):\n", columns);
 
     int current_column = 0;
-    char *p = info;
+    p = info;
     while (current_column < columns) {
         sscanf(p, "%s %c", table->column_names[current_column],
                            &(table->column_types[current_column]));
@@ -113,7 +109,7 @@ table_t *init_table(char *table_name) {
         p += sizeof(char);
         table->row_size += table->column_sizes[current_column];
 
-        printf("Column %d: %s, type %c, size %d\n",
+        printf("Column %d: %s, type %c, size %zu\n",
                   current_column,
                   table->column_names[current_column],
                   table->column_types[current_column],
@@ -122,24 +118,74 @@ table_t *init_table(char *table_name) {
         current_column++;
     }
 
+    printf("init_table done\n");
     return table;
 }
 
-void get_page(char *page_buffer, FILE *table, long int offset) {
+/*
+ * Helper function that reads into a page buffer from a table file
+ */
+int get_page(char *page_buffer, FILE *table, size_t offset) {
     fseek(table, offset, SEEK_SET);
-    fread(page_buffer, sizeof(*page_buffer), PAGE_SIZE, table);
+    size_t temp = fread(page_buffer, sizeof(*page_buffer), PAGE_SIZE, table);
+
+    if (temp != PAGE_SIZE) return 0;
+    return 1;
 }
 
-void append_page(FILE *table) {
-    fseek(table, 0, SEEK_END);
+/*
+ * Function that writes an empty page at the end of the table file
+ */
+void append_page(FILE *fin, table_t *table) {
+    fseek(fin, 0, SEEK_END);
     char new_page[PAGE_SIZE];
-    int *temp = (int *)new_page;
+    memset(new_page, 0, PAGE_SIZE);
 
-    // primul id de pe pagina este -1
-    temp[0] = -1;
+    *(int *)new_page = sizeof (int);
+    printf("%d\n", *(int *)new_page);
 
-    fwrite(new_page, sizeof(char), PAGE_SIZE, table);
+    size_t temp = fwrite(new_page, sizeof *new_page, PAGE_SIZE, fin);
+    printf("Append succesfully wrote %zu chars\n", temp);
 }
 
-// TODO: (function) find first page to fit new row (if end of file reached, use append_page)
-// TODO: (function) insert and delete row from page
+/*
+ * Inserts new row into page
+ */
+void insert_row_in_page(char *row, table_t *table, size_t offset, FILE *fin) {
+    char page_buffer[PAGE_SIZE];
+    memset(page_buffer, 0, PAGE_SIZE);
+    int id = (*(int *)row);
+
+    get_page(page_buffer, fin, offset);
+    int page_pos = *(int *)page_buffer;
+    printf("inserting row at position %d in page\n", page_pos);
+    *(int *)page_buffer = page_pos+(int)table->row_size;
+
+    memcpy(page_buffer+page_pos,
+           row, table->row_size * sizeof *row);
+
+    fseek(fin, offset, SEEK_SET);
+    fwrite(page_buffer, sizeof *page_buffer, PAGE_SIZE, fin);
+}
+
+
+void insert_row(char *row, table_t *table, FILE *fin) {
+    size_t offset = table->info_size;
+    char page_buffer[PAGE_SIZE];
+    memset(page_buffer, 0, PAGE_SIZE);
+
+    while (1) {
+        if (!get_page(page_buffer, fin, offset)) {
+            append_page(fin, table);
+            insert_row_in_page(row, table, offset, fin);
+            break;
+        }
+
+        int page_pos = *(int *)page_buffer;
+        if (page_pos+table->row_size < PAGE_SIZE) {
+            insert_row_in_page(row, table, offset, fin);
+            break;
+        }
+        offset += PAGE_SIZE;
+    }
+}

@@ -46,6 +46,7 @@ void create() {
             if(tip[0] == 'c'){
                 int nr;
                 sscanf(tip+5,"%d", &nr);
+                nr++;
                 fwrite(&nr, sizeof(nr), 1, db);
             }
             fwrite(",", 1, 1, db);
@@ -55,7 +56,7 @@ void create() {
     }
 }
 
-void insert(){
+void insert() {
     printf("Sunt la insert!\n");
     char check[10], table[100];
     scanf("%s %s", check, table);
@@ -70,29 +71,36 @@ void insert(){
             exit(0);
         }
 
-         FILE *db = fopen(table, "ab");
-        char val[100];
+        FILE *fin = fopen(table, "r+b");
+        table_t *tab = init_table(fin);
 
-        while(val[strlen(val)-1] != ';'){
-            scanf("%s", val);
+        fclose(fin);
 
-            printf("%s\n", val);
+        fin = fopen(table, "r+b");
 
-            if(val[strlen(val) - 1] == ';')
-                fwrite(val, sizeof *val, strlen(val) - 1, db);
-            else
-            {
-                fwrite(val, sizeof *val, strlen(val), db);
-                fwrite(",", 1, 1, db);
+        char *row_buffer = malloc(sizeof *row_buffer * tab->row_size);
+        memset(row_buffer, 0, tab->row_size);
+        // check if NULL
+
+        size_t iter = 0;
+        for (int i = 0; i < tab->columns; i++) {
+            if (tab->column_types[i] == 'i') {
+                // TODO: read int and insert into row buffer
             }
-
-
+            else if (tab->column_types[i] == 'c') {
+                // TODO: read char array and write into row buffer
+            }
+            else if (tab->column_types[i] == 'f') {
+                // TODO: read float and write into row buffer
+            }
         }
-        fwrite("\n", 1, 1, db);
-        fclose(db);
+
+        insert_row(row_buffer, tab, fin);
+        fclose(fin);
+
+        free_table(tab);
+        free(row_buffer);
     }
-
-
 }
 
 void delete(){
