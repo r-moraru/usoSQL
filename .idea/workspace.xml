@@ -12,14 +12,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1d161116-4f7c-4036-b0b4-6e0308d86d98" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/queue/queue.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/queue/queue.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/trie/trie.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/trie/trie.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pager/pager.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/pager/pager.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pager/pager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/pager/pager.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pager/pagerinfo.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,7 +71,7 @@
       <workItem from="1620494988042" duration="131000" />
       <workItem from="1620715121894" duration="8445000" />
       <workItem from="1620901369724" duration="3557000" />
-      <workItem from="1620974575694" duration="29570000" />
+      <workItem from="1620974575694" duration="31612000" />
     </task>
     <servers />
   </component>

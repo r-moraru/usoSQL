@@ -2,7 +2,7 @@
 #define PAGER_H_
 
 // TODO: page_size dinamic (se adapteaza la dimensiunile liniilor)
-#define PAGE_SIZE 200
+#define PAGE_SIZE 4096
 #define MAX_INFO_SIZE 1024
 #define COLNAME_SIZE 100
 

@@ -185,7 +185,7 @@ void insert_row(char *row, table_t *table, FILE *fin) {
         }
 
         int page_pos = *(int *)page_buffer;
-        if (page_pos+table->row_size < PAGE_SIZE) {
+        if (page_pos+table->row_size <= PAGE_SIZE) {
             insert_row_in_page(row, table, offset, fin);
             break;
         }
@@ -366,8 +366,11 @@ void delete_from_page(table_t *table, FILE *fin, cursor_t *cursor) {
 
     while (offset < last_row) {
         printf("checking at %d\n", offset+2*table->row_size);
-        if (offset+2*table->row_size > PAGE_SIZE)
+        if (offset+2*table->row_size > PAGE_SIZE) {
+            printf("Setting last row to NULL's\n");
             memset(page_buffer+offset, 0, PAGE_SIZE-offset);
+            break;
+        }
 
         memcpy(page_buffer+offset, page_buffer+offset+table->row_size, table->row_size);
 
@@ -377,6 +380,7 @@ void delete_from_page(table_t *table, FILE *fin, cursor_t *cursor) {
     offset = table->info_size + cursor->page_num*PAGE_SIZE;
 
     last_row -= table->row_size;
+    printf("Last row starting at %d\n", last_row);
     memcpy(page_buffer, &last_row, sizeof last_row);
 
     fseek(fin, offset, SEEK_SET);
