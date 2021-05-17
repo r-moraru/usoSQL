@@ -44,7 +44,8 @@ WHERE condition;
 **Select data from a table:**
 ```sql
 SELECT column1_name column2_name ...
-FROM table_name;
+FROM table_name
+WHERE condition;
 ```
 **Delete data from a table:**
 ```sql
