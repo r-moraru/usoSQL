@@ -1,4 +1,0 @@
-"C:\Program Files\JetBrains\CLion 2020.3\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" C:\Users\radua\CLionProjects\USO\usoSQL\usoSQL
--- Configuring done
--- Generating done
--- Build files have been written to: C:/Users/radua/CLionProjects/USO/usoSQL/usoSQL/cmake-build-debug
