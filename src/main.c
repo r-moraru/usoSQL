@@ -224,19 +224,22 @@ void update(){
 
 void select(){
     printf("Sunt la select!\n");
-
-    // TODO: de tratat cazul in care se selecteaza toate coloanele cu "*"
-
+    
     queue_t *queue = init_queue();
     char column_name[100];
+    int select_all = 0;
 
     for (scanf("%99s", column_name);
             strcmp(column_name, "FROM") != 0;
             scanf("%99s", column_name)) {
-        char *string = malloc(strlen(column_name)+1);
-        memcpy(string, column_name, strlen(column_name)+1);
+        if (strcmp(column_name, "*") == 0) {
+            select_all = 1;
+        } else {
+            char *string = malloc(strlen(column_name) + 1);
+            memcpy(string, column_name, strlen(column_name) + 1);
 
-        insert_string(queue, string);
+            insert_string(queue, string);
+        }
     }
 
     char table[100];
@@ -260,21 +263,27 @@ void select(){
     fin = fopen(table, "r+b");
 
     int *selected_cols = malloc(sizeof *selected_cols * tab->columns);
-    for (int i = 0; i < tab->columns; i++)
-        selected_cols[i] = 0;
+    if(select_all == 1) {
+        for (int i = 0; i < tab->columns; i++)
+            selected_cols[i] = 1;
+    }
+    else {
+        for (int i = 0; i < tab->columns; i++)
+            selected_cols[i] = 0;
 
-    // find positions in table->column_names for each selected column
-    while (queue->front != NULL) {
-        char *col = remove_string(queue);
+        // find positions in table->column_names for each selected column
+        while (queue->front != NULL) {
+            char *col = remove_string(queue);
 
-        for (int i = 0; i < tab->columns; i++) {
-            if (strcmp(col, tab->column_names[i]) == 0) {
-                selected_cols[i] = 1;
-                break;
+            for (int i = 0; i < tab->columns; i++) {
+                if (strcmp(col, tab->column_names[i]) == 0) {
+                    selected_cols[i] = 1;
+                    break;
+                }
             }
-        }
 
-        free(col);
+            free(col);
+        }
     }
 
     char temp_buffer[100];
