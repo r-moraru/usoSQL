@@ -224,7 +224,7 @@ void update(){
 
 void select(){
     printf("Sunt la select!\n");
-    
+
     queue_t *queue = init_queue();
     char column_name[100];
     int select_all = 0;
@@ -245,8 +245,12 @@ void select(){
     char table[100];
     scanf("%99s", table);
 
-    if (table[strlen(table)-1] == ';')
-        table[strlen(table)-1] = '\0';
+    int flag_where = 1;
+
+    if (table[strlen(table)-1] == ';') {
+        table[strlen(table) - 1] = '\0';
+        flag_where = 0;
+    }
 
     strcat(table, ".db");
 
@@ -287,35 +291,36 @@ void select(){
     }
 
     char temp_buffer[100];
+    
+    if(flag_where == 1) {
+        scanf("%s", temp_buffer);   // where
+        scanf("%s", column_name);
+        scanf("%s", temp_buffer);   // =
 
-    // TODO: de tratat cazul in care nu exista conditie where
+        void *value;
 
-    scanf("%s", temp_buffer);   // where
-    scanf("%s", column_name);
-    scanf("%s", temp_buffer);   // =
-
-    void *value;
-
-    for (int i = 0; i < tab->columns; i++) {
-        if (strcmp(column_name, tab->column_names[i]) == 0) {
-            if (tab->column_types[i] == 'i') {
-                value = malloc(sizeof(int));
-                scanf("%d", (int *)value);
-            }
-            else if (tab->column_types[i] == 'f') {
-                value = malloc(sizeof(float));
-                scanf("%f", (float *)value);
-            }
-            else {
-                value = malloc(tab->column_sizes[i]);
-                scanf("%s", (char *)value);
+        for (int i = 0; i < tab->columns; i++) {
+            if (strcmp(column_name, tab->column_names[i]) == 0) {
+                if (tab->column_types[i] == 'i') {
+                    value = malloc(sizeof(int));
+                    scanf("%d", (int *) value);
+                } else if (tab->column_types[i] == 'f') {
+                    value = malloc(sizeof(float));
+                    scanf("%f", (float *) value);
+                } else {
+                    value = malloc(tab->column_sizes[i]);
+                    scanf("%s", (char *) value);
+                }
             }
         }
+
+        select_rows(tab, fin, selected_cols, column_name, value);
+
+        free(value);
     }
-
-    select_rows(tab, fin, selected_cols, column_name, value);
-
-    free(value);
+    else {
+        select_rows(tab, fin, selected_cols, NULL, NULL);
+    }
     free(selected_cols);
     fclose(fin);
     free_table(tab);
