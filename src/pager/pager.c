@@ -258,9 +258,10 @@ void find_next_occurrence(FILE *fin, table_t *table, cursor_t *cursor,  char *co
                 memcpy(val, page_buffer + row_pos + col_pos, column_size);
                 val[column_size] = '\0';
 
-                if (strcmp(val, (char *)value) == 0)
+                if (strcmp(val, (char *)value) == 0) {
+                    free(val);
                     return;
-
+                }
                 free(val);
             }
 
