@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/radua/CLionProjects/USO/usoSQL/usoSQL/src/pager/pager.c
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+stdarg.h
+-
+pager.h
+C:/Users/radua/CLionProjects/USO/usoSQL/usoSQL/src/pager/pager.h
+
+C:/Users/radua/CLionProjects/USO/usoSQL/usoSQL/src/pager/pager.h
+

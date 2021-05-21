@@ -1,0 +1,3 @@
+C:/Users/radua/CLionProjects/USO/usoSQL/usoSQL/cmake-build-debug/CMakeFiles/usoSQL.dir
+C:/Users/radua/CLionProjects/USO/usoSQL/usoSQL/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/radua/CLionProjects/USO/usoSQL/usoSQL/cmake-build-debug/CMakeFiles/rebuild_cache.dir

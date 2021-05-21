@@ -71,6 +71,18 @@ void insert() {
         FILE *fin = fopen(table, "r+b");
         table_t *tab = init_table(fin);
 
+        printf("Table Data:\n");
+        printf("  - # of columns: %d\n", tab->columns);
+        printf("  - Info size: %zu\n", tab->info_size);
+        printf("  - Row size: %zu\n", tab->row_size);
+        printf("Columns:\n");
+        for (int i = 0; i < tab->columns; i++) {
+            printf("  * %s, type: %c, size: %zu\n",
+                   tab->column_names[i],
+                   tab->column_types[i],
+                   tab->column_sizes[i]);
+        }
+
         fclose(fin);
 
         fin = fopen(table, "r+b");
@@ -297,7 +309,7 @@ void select(){
         scanf("%s", column_name);
         scanf("%s", temp_buffer);   // =
 
-        void *value;
+        void *value = NULL;
 
         for (int i = 0; i < tab->columns; i++) {
             if (strcmp(column_name, tab->column_names[i]) == 0) {
