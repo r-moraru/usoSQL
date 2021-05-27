@@ -183,7 +183,8 @@ void update(){
     printf("Sunt la update!\n");
 
     char check[10], table_name[100];
-    scanf("%s %s", check, table_name);
+    scanf("%s", table_name);
+
 
     if (table_name[strlen(table_name)-1] == ';')
         table_name[strlen(table_name)-1] = '\0';
@@ -205,8 +206,10 @@ void update(){
     char temp_buffer[100];
     scanf("%s", check);
 
-    // TODO: initiate column - value queues
+    // vector de pointeri la null
+    void **valori = malloc(tab->columns * sizeof(*valori));
 
+    // citeste numele coloanelor pana da de where
     for (scanf("%s", temp_buffer);
             strcmp(temp_buffer, "WHERE") != 0;
             scanf("%s", temp_buffer)) {
@@ -223,12 +226,47 @@ void update(){
                     scanf("%f", (float *)value);
                 }
                 else {
-                    value = malloc(tab->column_sizes[i]);
+                    value = calloc(tab->column_sizes[i], 1);
+
                     scanf("%s", (char *)value);
                 }
+                valori[i] = value;
+            } else {
+                valori[i] = NULL;
             }
         }
     }
+
+    char column_name[100];
+
+    scanf("%s", column_name);
+    scanf("%s", check);
+
+    void *value;
+
+    for (int i = 0; i < tab->columns; i++) {
+        if (strcmp(column_name, tab->column_names[i]) == 0) {
+            if (tab->column_types[i] == 'i') {
+                value = malloc(sizeof(int));
+                scanf("%d", (int *)value);
+            }
+            else if (tab->column_types[i] == 'f') {
+                value = malloc(sizeof(float));
+                scanf("%f", (float *)value);
+            }
+            else {
+                value = malloc(tab->column_sizes[i]);
+                scanf("%s", (char *)value);
+            }
+        }
+    }
+
+    update_rows(tab, fin, valori, column_name, value);
+
+    for(int i=0; i<tab->columns; i++)
+        free(valori[i]);
+
+    free(valori);
 
     fclose(fin);
     free_table(tab);

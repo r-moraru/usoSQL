@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdarg.h>
 
 #include "pager.h"
 
@@ -278,7 +277,6 @@ void find_next_occurrence(FILE *fin, table_t *table, cursor_t *cursor,  char *co
     }
 }
 
-
 void print_row(FILE *fin, table_t *table, const int *print_rows, cursor_t *cursor) {
     long int offset = table->info_size;
     offset += PAGE_SIZE * cursor->page_num;
@@ -341,7 +339,10 @@ void move_cursor_left(FILE *fin, table_t *table, cursor_t *cursor) {
     // check if cursor needs to be moved to next page
     if (row_pos + table->row_size >= *(int *)page_buffer) {
         cursor->page_num++;
-        cursor->row_num = 0;
+        if (!get_page(page_buffer, fin, table->info_size + cursor->page_num*PAGE_SIZE)) {
+            cursor->EOT = 1;
+            cursor->row_num = 0;
+        }
         return;
     }
     cursor->row_num++;
@@ -419,6 +420,57 @@ void delete_row(table_t *table, FILE *fin, char *col, void *val) {
             find_next_occurrence(fin, table, cursor, col, val)) {
         printf("Found a row to delete\n");
         delete_from_page(table, fin, cursor);
+    }
+
+    free(cursor);
+}
+
+void update_row(table_t *table, FILE *fin, cursor_t *cursor, void **values) {
+    printf("update row\n");
+    char page_buffer[PAGE_SIZE];
+
+    size_t offset = table->info_size;
+    offset += cursor->page_num * PAGE_SIZE;
+
+    if (!get_page(page_buffer, fin, offset)) {
+        return;
+    }
+    // dau read la linia de la cursor
+
+    size_t pos = sizeof(int) + cursor->row_num * table->row_size;
+
+    for (int i = 0; i < table->columns; i++) {
+        if (values[i] != NULL) {
+            printf("updating column %s\n", table->column_names[i]);
+            memcpy(page_buffer+pos, values[i], table->column_sizes[i]);
+        }
+
+        pos += table->column_sizes[i];
+    }
+
+    fseek(fin, offset, SEEK_SET);
+    fwrite(page_buffer, 1, PAGE_SIZE, fin);
+}
+
+void update_rows(table_t *table, FILE *fin, void **values, char *col, void *val) {
+    printf("update rows");
+    cursor_t *cursor = init_cursor(fin, table);
+    if (val == NULL) {
+        // select all rows from table
+        while (cursor->EOT == 0) {
+            printf("cursor at page %d, line %d\n", cursor->page_num, cursor->row_num);
+            update_row(table, fin, cursor, values);
+            move_cursor_left(fin, table, cursor);
+        }
+    }
+    else {
+        for (find_next_occurrence(fin, table, cursor, col, val);
+                 cursor->EOT == 0;
+                 find_next_occurrence(fin, table, cursor, col, val)) {
+            update_row(table, fin, cursor, values);
+
+            move_cursor_left(fin, table, cursor);
+        }
     }
 
     free(cursor);

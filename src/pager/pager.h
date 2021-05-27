@@ -41,5 +41,6 @@ void select_rows(table_t *table, FILE *fin, int *print_row, char *col, void *val
 void delete_row(table_t *table, FILE *fin, char *col, void *val);
 
 // TODO: update row (function used as callback for search)
+void update_rows(table_t *table, FILE *fin, void **values, char *col, void *val);
 
 #endif
