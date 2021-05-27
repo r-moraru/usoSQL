@@ -300,21 +300,15 @@ void print_row(FILE *fin, table_t *table, const int *print_rows, cursor_t *curso
         if (table->column_types[i] == 'i') {
             int val;
             memcpy(&val, page_buffer+row_pos+col_pos, sizeof val);
-
-            printf("%d, ", val);
         }
         else if (table->column_types[i] == 'f') {
             float val;
             memcpy(&val, page_buffer+row_pos+col_pos, sizeof val);
-
-            printf("%f, ", val);
         }
         else {
             char *val = malloc((sizeof *val) * (table->column_sizes[i]+1));
             memcpy(val, page_buffer + row_pos + col_pos, table->column_sizes[i]);
             val[table->column_sizes[i]] = '\0';
-
-            printf("%s, ", val);
 
             free(val);
         }
@@ -386,11 +380,9 @@ void delete_from_page(table_t *table, FILE *fin, cursor_t *cursor) {
 
     offset = sizeof(int) + cursor->row_num * table->row_size;
 
-    // muta cu o pozitie mai sus toate coloanele aflate sub cea de sters
+    // shifts all rows below deleted row
     while (offset < last_row) {
-        printf("checking at %d\n", offset+2*table->row_size);
         if (offset+2*table->row_size > PAGE_SIZE) {
-            printf("Setting last row to NULL's\n");
             memset(page_buffer+offset, 0, PAGE_SIZE-offset);
             break;
         }
@@ -403,7 +395,6 @@ void delete_from_page(table_t *table, FILE *fin, cursor_t *cursor) {
     offset = table->info_size + cursor->page_num*PAGE_SIZE;
 
     last_row -= table->row_size;
-    // update la int-ul de la inceputul paginii
     memcpy(page_buffer, &last_row, sizeof last_row);
 
     fseek(fin, offset, SEEK_SET);
@@ -412,8 +403,6 @@ void delete_from_page(table_t *table, FILE *fin, cursor_t *cursor) {
 
 void delete_row(table_t *table, FILE *fin, char *col, void *val) {
     cursor_t *cursor = init_cursor(fin, table);
-
-    // TODO: delete fara conditie WHERE
 
     for (find_next_occurrence(fin, table, cursor, col, val);
             cursor->EOT == 0;
@@ -426,7 +415,6 @@ void delete_row(table_t *table, FILE *fin, char *col, void *val) {
 }
 
 void update_row(table_t *table, FILE *fin, cursor_t *cursor, void **values) {
-    printf("update row\n");
     char page_buffer[PAGE_SIZE];
 
     size_t offset = table->info_size;
@@ -435,13 +423,11 @@ void update_row(table_t *table, FILE *fin, cursor_t *cursor, void **values) {
     if (!get_page(page_buffer, fin, offset)) {
         return;
     }
-    // dau read la linia de la cursor
 
     size_t pos = sizeof(int) + cursor->row_num * table->row_size;
 
     for (int i = 0; i < table->columns; i++) {
         if (values[i] != NULL) {
-            printf("updating column %s\n", table->column_names[i]);
             memcpy(page_buffer+pos, values[i], table->column_sizes[i]);
         }
 
@@ -453,12 +439,10 @@ void update_row(table_t *table, FILE *fin, cursor_t *cursor, void **values) {
 }
 
 void update_rows(table_t *table, FILE *fin, void **values, char *col, void *val) {
-    printf("update rows");
     cursor_t *cursor = init_cursor(fin, table);
     if (val == NULL) {
         // select all rows from table
         while (cursor->EOT == 0) {
-            printf("cursor at page %d, line %d\n", cursor->page_num, cursor->row_num);
             update_row(table, fin, cursor, values);
             move_cursor_left(fin, table, cursor);
         }

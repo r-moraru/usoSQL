@@ -9,12 +9,11 @@
 #include "queue/queue.h"
 
 void help(){
-    printf("Citeste fisierul README.md");
+    printf("Open README.md");
 }
 
 void create() {
     char check[10], table[100];
-    printf("Sunt la create!\n");
     scanf("%s %s", check, table);
 
     strcat(table, ".db");
@@ -23,7 +22,7 @@ void create() {
     } else {
         // Check if table already exists. If it does, quit
         if( access(table, F_OK ) == 0 ) {
-            printf("Deja exista %s", table);
+            printf("Table %s already exists.", table);
             exit(0);
         }
 
@@ -54,7 +53,6 @@ void create() {
 }
 
 void insert() {
-    printf("Sunt la insert!\n");
     char check[10], table[100];
     scanf("%s %s", check, table);
     strcat(table, ".db");
@@ -89,7 +87,6 @@ void insert() {
 
         char *row_buffer = malloc(sizeof *row_buffer * tab->row_size);
         memset(row_buffer, 0, tab->row_size);
-        // check if NULL
 
         size_t iter = 0;
         for (int i = 0; i < tab->columns; i++) {
@@ -104,6 +101,9 @@ void insert() {
                 temp = malloc(tab->column_sizes[i]);
                 memset(temp, 0, tab->column_sizes[i]);
                 scanf("%s", temp);  // buffer overflow
+
+                if (temp[strlen(temp)-1] == ';')
+                    temp[strlen(temp)-1] = '\0';
 
                 memcpy(row_buffer+iter, temp, tab->column_sizes[i]);
             }
@@ -125,17 +125,19 @@ void insert() {
 }
 
 void delete(){
-    printf("Sunt la delete!\n");
     char check[10], table_name[100];
+    int condition = 1;
     scanf("%s %s", check, table_name);
 
-    if (table_name[strlen(table_name)-1] == ';')
+    if (table_name[strlen(table_name)-1] == ';') {
         table_name[strlen(table_name)-1] = '\0';
+        condition = 0;
+    }
 
     strcat(table_name, ".db");
 
     if( access(table_name, F_OK ) != 0 ) {
-        printf("Nu exista %s", table_name);
+        printf("Table %s does not exist.", table_name);
         exit(0);
     }
 
@@ -147,31 +149,34 @@ void delete(){
     fin = fopen(table_name, "r+b");
 
     char column_name[100];
+    void *value = NULL;
 
-    scanf("%s", check);
-    scanf("%s", column_name);
-    scanf("%s", check);
+    if (condition) {
+        scanf("%s", check);
+        scanf("%s", column_name);
+        scanf("%s", check);
 
-    void *value;
 
-    for (int i = 0; i < tab->columns; i++) {
-        if (strcmp(column_name, tab->column_names[i]) == 0) {
-            if (tab->column_types[i] == 'i') {
-                value = malloc(sizeof(int));
-                scanf("%d", (int *)value);
-            }
-            else if (tab->column_types[i] == 'f') {
-                value = malloc(sizeof(float));
-                scanf("%f", (float *)value);
-            }
-            else {
-                value = malloc(tab->column_sizes[i]);
-                scanf("%s", (char *)value);
+        for (int i = 0; i < tab->columns; i++) {
+            if (strcmp(column_name, tab->column_names[i]) == 0) {
+                if (tab->column_types[i] == 'i') {
+                    value = malloc(sizeof(int));
+                    scanf("%d", (int *)value);
+                }
+                else if (tab->column_types[i] == 'f') {
+                    value = malloc(sizeof(float));
+                    scanf("%f", (float *)value);
+                }
+                else {
+                    value = malloc(tab->column_sizes[i]);
+                    scanf("%s", (char *)value);
+                    if (((char *)value)[strlen((char *)value)-1] == ';')
+                        ((char *)value)[strlen((char *)value)-1] = '\0';
+                }
             }
         }
     }
 
-    printf("Delete lol\n");
     delete_row(tab, fin, column_name, value);
 
     free(value);
@@ -180,11 +185,9 @@ void delete(){
 }
 
 void update(){
-    printf("Sunt la update!\n");
-
     char check[10], table_name[100];
+    int condition = 1;
     scanf("%s", table_name);
-
 
     if (table_name[strlen(table_name)-1] == ';')
         table_name[strlen(table_name)-1] = '\0';
@@ -192,7 +195,7 @@ void update(){
     strcat(table_name, ".db");
 
     if( access(table_name, F_OK ) != 0 ) {
-        printf("Nu exista %s", table_name);
+        printf("Table %s does not exist.", table_name);
         exit(0);
     }
 
@@ -206,14 +209,20 @@ void update(){
     char temp_buffer[100];
     scanf("%s", check);
 
-    // vector de pointeri la null
-    void **valori = malloc(tab->columns * sizeof(*valori));
+    void **values = malloc(tab->columns * sizeof(*values));
+    for (int i = 0; i < tab->columns; i++)
+        values[i] = NULL;
 
-    // citeste numele coloanelor pana da de where
+    // read column names until stdin reaches WHERE condition
     for (scanf("%s", temp_buffer);
             strcmp(temp_buffer, "WHERE") != 0;
             scanf("%s", temp_buffer)) {
         void *value;
+
+        if (strcmp(temp_buffer, ";") == 0) {
+            condition = 0;
+            break;
+        }
 
         for (int i = 0; i < tab->columns; i++) {
             if (strcmp(temp_buffer, tab->column_names[i]) == 0) {
@@ -229,51 +238,55 @@ void update(){
                     value = calloc(tab->column_sizes[i], 1);
 
                     scanf("%s", (char *)value);
+                    if (((char *)value)[strlen((char *)value)-1] == ';') {
+                        ((char *)value)[strlen((char *)value)-1] = '\0';
+                        condition = 0;
+                        values[i] = value;
+                        break;
+                    }
                 }
-                valori[i] = value;
-            } else {
-                valori[i] = NULL;
+                values[i] = value;
             }
         }
     }
 
     char column_name[100];
+    void *value = NULL;
 
-    scanf("%s", column_name);
-    scanf("%s", check);
+    if (condition) {
+        scanf("%s", column_name);
+        scanf("%s", check);
 
-    void *value;
-
-    for (int i = 0; i < tab->columns; i++) {
-        if (strcmp(column_name, tab->column_names[i]) == 0) {
-            if (tab->column_types[i] == 'i') {
-                value = malloc(sizeof(int));
-                scanf("%d", (int *)value);
-            }
-            else if (tab->column_types[i] == 'f') {
-                value = malloc(sizeof(float));
-                scanf("%f", (float *)value);
-            }
-            else {
-                value = malloc(tab->column_sizes[i]);
-                scanf("%s", (char *)value);
+        for (int i = 0; i < tab->columns; i++) {
+            if (strcmp(column_name, tab->column_names[i]) == 0) {
+                if (tab->column_types[i] == 'i') {
+                    value = malloc(sizeof(int));
+                    scanf("%d", (int *)value);
+                }
+                else if (tab->column_types[i] == 'f') {
+                    value = malloc(sizeof(float));
+                    scanf("%f", (float *)value);
+                }
+                else {
+                    value = malloc(tab->column_sizes[i]);
+                    scanf("%s", (char *)value);
+                }
             }
         }
     }
 
-    update_rows(tab, fin, valori, column_name, value);
+    update_rows(tab, fin, values, column_name, value);
 
     for(int i=0; i<tab->columns; i++)
-        free(valori[i]);
+        free(values[i]);
 
-    free(valori);
+    free(values);
 
     fclose(fin);
     free_table(tab);
 }
 
 void select(){
-    printf("Sunt la select!\n");
 
     queue_t *queue = init_queue();
     char column_name[100];
@@ -305,7 +318,7 @@ void select(){
     strcat(table, ".db");
 
     if( access(table, F_OK ) != 0 ) {
-        printf("Nu exista %s", table);
+        printf("Table %s does not exist.", table);
         exit(0);
     }
 
@@ -360,6 +373,9 @@ void select(){
                 } else {
                     value = malloc(tab->column_sizes[i]);
                     scanf("%s", (char *) value);
+
+                    if (((char *)value)[strlen((char *)value)-1] == ';')
+                        ((char *) value)[strlen((char *) value) - 1] = '\0';
                 }
             }
         }
@@ -377,7 +393,6 @@ void select(){
 }
 
 void drop(){
-    printf("Sunt la drop!\n");
     char check[100], name[100];
 
     scanf("%s", check);
@@ -389,14 +404,14 @@ void drop(){
         if (d) {
             while ((dir = readdir(d)) != NULL) {
                 if(strcmp(dir->d_name + (strlen(dir->d_name) - 3),".db") == 0){
-                    remove(dir->d_name); //se sterg toate fisierele cu extensia .db din folder
+                    remove(dir->d_name); // deletes all files with .db extension
                 }
             }
 
             char cwd[PATH_MAX]; //cwd - current working directory
             if (getcwd(cwd, sizeof(cwd)) != NULL) {
-                chdir(".."); //schimb cwd pentru a il putea sterge
-                int r = rmdir(cwd); //sterg folderul bazei de date
+                chdir("..");
+                int r = rmdir(cwd); // delete database folder
                 if(r == -1){
                     perror("rmdir() error");
                 }
@@ -414,7 +429,7 @@ void drop(){
 
 int main(int argc, char* argv[]) {
     char sqlcmd[1000];
-    scanf("%s", sqlcmd); //citeste primul cuvant cheie
+    scanf("%s", sqlcmd); // reads first keyword from stdin
 
     if(argc == 2) {
         char path[100];
@@ -425,7 +440,7 @@ int main(int argc, char* argv[]) {
         if (!check)
             printf("Database created\n");
 
-        int ch=chdir(path); //aici se schimba working directory-ul pentru program
+        int ch=chdir(path); // changing working directory
         if(ch<0) {
             printf("Something went wrong, chdir change of directory not successful\n");
             return 2;
