@@ -300,15 +300,21 @@ void print_row(FILE *fin, table_t *table, const int *print_rows, cursor_t *curso
         if (table->column_types[i] == 'i') {
             int val;
             memcpy(&val, page_buffer+row_pos+col_pos, sizeof val);
+
+            printf("%d, ", val);
         }
         else if (table->column_types[i] == 'f') {
             float val;
             memcpy(&val, page_buffer+row_pos+col_pos, sizeof val);
+
+            printf("%f, ", val);
         }
         else {
             char *val = malloc((sizeof *val) * (table->column_sizes[i]+1));
             memcpy(val, page_buffer + row_pos + col_pos, table->column_sizes[i]);
             val[table->column_sizes[i]] = '\0';
+
+            printf("%s, ", val);
 
             free(val);
         }
