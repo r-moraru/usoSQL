@@ -40,8 +40,6 @@ void create() {
             scanf("%s", coloana);
             scanf("%s", tip);
 
-            printf("%s %s\n", coloana, tip);
-
             fwrite(coloana, sizeof *coloana, strlen(coloana), db);
             fwrite(" ", 1, 1, db);
             fwrite(tip, sizeof *tip, 1, db);
@@ -49,7 +47,6 @@ void create() {
             if(tip[0] == 'c'){
                 int nr;
                 sscanf(tip+5,"%d", &nr);
-                nr++;
                 fwrite(&nr, sizeof(nr), 1, db);
             }
             fwrite(",", 1, 1, db);
@@ -69,25 +66,13 @@ void insert() {
     } else {
         // Check if table doesn't exist. If it doesn't, quit
         if( access(table, F_OK ) != 0 ) {
-            printf("Nu exista %s", table);
+            printf("Table %s does not exist.", table);
             exit(0);
         }
 
         FILE *fin = fopen(table, "r+b");
         table_t *tab = init_table(fin);
         fseek(fin, 0, SEEK_SET);
-
-        printf("Table Data:\n");
-        printf("  - # of columns: %d\n", tab->columns);
-        printf("  - Info size: %zu\n", tab->info_size);
-        printf("  - Row size: %zu\n", tab->row_size);
-        printf("Columns:\n");
-        for (int i = 0; i < tab->columns; i++) {
-            printf("  * %s, type: %c, size: %zu\n",
-                   tab->column_names[i],
-                   tab->column_types[i],
-                   tab->column_sizes[i]);
-        }
 
         fclose(fin);
         fin = fopen(table, "r+b");
@@ -113,6 +98,8 @@ void insert() {
                     temp[strlen(temp)-1] = '\0';
 
                 memcpy(row_buffer+iter, temp, tab->column_sizes[i]);
+
+		free(temp);
             }
             else if (tab->column_types[i] == 'f') {
                 float temp;
@@ -210,10 +197,9 @@ void update(){
     table_t *tab = init_table(fin);
 
     fseek(fin, 0, SEEK_SET);
-#ifndef __unix__
+    
     fclose(fin);
     fin = fopen(table_name, "r+b");
-#endif
 
     char temp_buffer[100];
     scanf("%s", check);
@@ -279,6 +265,8 @@ void update(){
                 else {
                     value = malloc(tab->column_sizes[i]);
                     scanf("%s", (char *)value);
+		    if (((char *)value)[strlen((char *)value)-1] == ';')
+			((char *)value)[strlen((char *)value)-1] = '\0';
                 }
             }
         }
@@ -289,6 +277,7 @@ void update(){
     for(int i=0; i<tab->columns; i++)
         free(values[i]);
 
+    free(value);
     free(values);
 
     fclose(fin);
@@ -334,10 +323,9 @@ void select1(){
     FILE *fin = fopen(table, "r+b");
     table_t *tab = init_table(fin);
     fseek(fin, 0, SEEK_SET);
-#ifdef __unix__
+
     fclose(fin);
     fin = fopen(table, "r+b");
-#endif
 
     int *selected_cols = malloc(sizeof *selected_cols * tab->columns);
     if(select_all == 1) {
@@ -398,6 +386,7 @@ void select1(){
         select_rows(tab, fin, selected_cols, NULL, NULL);
     }
     
+    free(queue);
     free(selected_cols);
     fclose(fin);
     free_table(tab);
@@ -448,7 +437,7 @@ int main(int argc, char* argv[]) {
 #ifdef __unix__
         int check = mkdir(path, 0777);
 #else
-	int check = mkdir(path, 0777);
+	int check = mkdir(path);
 #endif
         // check if database is created or not
         if (!check)
