@@ -38,7 +38,7 @@ value1 value2 ...;
 **Update data from a table:**
 ```sql
 UPDATE table_name
-SET column1_name = value1 column2_name = value2 ... 
+SET column1_name value1 column2_name value2 ... 
 WHERE condition;
 ```
 **Select data from a table:**
