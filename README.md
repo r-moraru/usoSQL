@@ -53,7 +53,7 @@ DELETE FROM table_name WHERE condition;
 ```
 **Delete database:**
 ```sql
-DROP DATABASE name_db
+DROP DATABASE
 ```
 
 ## Contributing
