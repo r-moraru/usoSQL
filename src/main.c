@@ -5,6 +5,13 @@
 #include <limits.h>
 #include <dirent.h>
 
+#ifdef __unix__
+    #include <unistd.h>
+    #include <sys/stat.h>
+    #include <fcntl.h>
+    #include <sys/types.h>
+#endif
+
 #include "pager/pager.h"
 #include "queue/queue.h"
 
@@ -68,6 +75,7 @@ void insert() {
 
         FILE *fin = fopen(table, "r+b");
         table_t *tab = init_table(fin);
+        fseek(fin, 0, SEEK_SET);
 
         printf("Table Data:\n");
         printf("  - # of columns: %d\n", tab->columns);
@@ -82,7 +90,6 @@ void insert() {
         }
 
         fclose(fin);
-
         fin = fopen(table, "r+b");
 
         char *row_buffer = malloc(sizeof *row_buffer * tab->row_size);
@@ -143,9 +150,9 @@ void delete(){
 
     FILE *fin = fopen(table_name, "r+b");
     table_t *tab = init_table(fin);
+    fseek(fin, 0, SEEK_SET);
 
     fclose(fin);
-
     fin = fopen(table_name, "r+b");
 
     char column_name[100];
@@ -202,9 +209,11 @@ void update(){
     FILE *fin = fopen(table_name, "r+b");
     table_t *tab = init_table(fin);
 
+    fseek(fin, 0, SEEK_SET);
+#ifndef __unix__
     fclose(fin);
-
     fin = fopen(table_name, "r+b");
+#endif
 
     char temp_buffer[100];
     scanf("%s", check);
@@ -286,7 +295,7 @@ void update(){
     free_table(tab);
 }
 
-void select(){
+void select1(){
 
     queue_t *queue = init_queue();
     char column_name[100];
@@ -324,10 +333,11 @@ void select(){
 
     FILE *fin = fopen(table, "r+b");
     table_t *tab = init_table(fin);
-
+    fseek(fin, 0, SEEK_SET);
+#ifdef __unix__
     fclose(fin);
-
     fin = fopen(table, "r+b");
+#endif
 
     int *selected_cols = malloc(sizeof *selected_cols * tab->columns);
     if(select_all == 1) {
@@ -387,6 +397,7 @@ void select(){
     else {
         select_rows(tab, fin, selected_cols, NULL, NULL);
     }
+    
     free(selected_cols);
     fclose(fin);
     free_table(tab);
@@ -434,16 +445,19 @@ int main(int argc, char* argv[]) {
     if(argc == 2) {
         char path[100];
         strcpy(path, argv[1]);
-
-        int check = mkdir(path);
+#ifdef __unix__
+        int check = mkdir(path, 0777);
+#else
+	int check = mkdir(path, 0777);
+#endif
         // check if database is created or not
         if (!check)
-            printf("Database created\n");
+            printf("Database created: %s\n", path);
 
         int ch=chdir(path); // changing working directory
         if(ch<0) {
             printf("Something went wrong, chdir change of directory not successful\n");
-            return 2;
+            // return 2;
         }
 
         if (strcmp(sqlcmd, "CREATE") == 0) {
@@ -455,7 +469,7 @@ int main(int argc, char* argv[]) {
         } else if (strcmp(sqlcmd, "UPDATE") == 0) {
             update();
         } else if (strcmp(sqlcmd, "SELECT") == 0) {
-            select();
+            select1();
         } else if (strcmp(sqlcmd, "DROP") == 0){
             drop();
         } else {
