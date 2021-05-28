@@ -301,20 +301,20 @@ void print_row(FILE *fin, table_t *table, const int *print_rows, cursor_t *curso
             int val;
             memcpy(&val, page_buffer+row_pos+col_pos, sizeof val);
 
-            printf("%d, ", val);
+	    printf("%d, ", val);
         }
         else if (table->column_types[i] == 'f') {
             float val;
             memcpy(&val, page_buffer+row_pos+col_pos, sizeof val);
 
-            printf("%f, ", val);
+	    printf("%f, ", val);
         }
         else {
             char *val = malloc((sizeof *val) * (table->column_sizes[i]+1));
             memcpy(val, page_buffer + row_pos + col_pos, table->column_sizes[i]);
             val[table->column_sizes[i]] = '\0';
 
-            printf("%s, ", val);
+	    printf("%s, ", val);
 
             free(val);
         }
@@ -413,7 +413,7 @@ void delete_row(table_t *table, FILE *fin, char *col, void *val) {
     for (find_next_occurrence(fin, table, cursor, col, val);
             cursor->EOT == 0;
             find_next_occurrence(fin, table, cursor, col, val)) {
-        printf("Found a row to delete\n");
+        // printf("Found a row to delete\n");
         delete_from_page(table, fin, cursor);
     }
 
