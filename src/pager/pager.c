@@ -413,7 +413,6 @@ void delete_row(table_t *table, FILE *fin, char *col, void *val) {
     for (find_next_occurrence(fin, table, cursor, col, val);
             cursor->EOT == 0;
             find_next_occurrence(fin, table, cursor, col, val)) {
-        // printf("Found a row to delete\n");
         delete_from_page(table, fin, cursor);
     }
 
