@@ -12,7 +12,7 @@
 ## Usage 
 **Open database:**
 ```bash
-./main name_db
+./usoSQL name_db
 ```
 
 **Create a table:**
