@@ -22,7 +22,7 @@ column1_name data_type
 column2_name data_type
 .
 .
-.;
+columnN_name data_type;
 ```
 **⚠️ IMPORTANT ⚠️**
    * **data_type** can be either **int**, **char(nr)** or **float**
